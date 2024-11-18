@@ -1,0 +1,15 @@
+<div [formGroup]="formGroup">
+    <mat-form-field class="form-campo">
+        <mat-label>{{ placeholder }}</mat-label>
+        <mat-select
+            formControlName="{{ nomePadraoFormControl }}"
+            [compareWith]="funcaoCompara"
+            (optionSelected)="aoSelecionarItem($event)"
+            multiple
+        >
+            <mat-option *ngFor="let item of itensFiltrados$ | async" [value]="item">
+                <span>{{ recursos[modelo].formatarExibicaoItem(item) }}</span>
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>

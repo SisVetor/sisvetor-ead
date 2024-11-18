@@ -1,0 +1,25 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+.map-container {
+    flex-grow: 1;
+}
+.center-marker {
+    position: fixed !important;
+    z-index: 1000;
+    top: 50%;
+    left: 50%;
+    margin-top: -32px;
+    margin-left: -13px;
+    color: #808080;
+    transform: scale(2);
+}
+
+.botaoVoltarMapa {
+    left: 20px;
+    top: 20px;
+    position: absolute !important;
+    z-index: 1000;
+}

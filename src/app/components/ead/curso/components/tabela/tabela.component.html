@@ -1,0 +1,90 @@
+<div fxLayout="column" fxLayoutGap="10px">
+    <form
+        *ngIf="formGroupPesquisa"
+        [formGroup]="formGroupPesquisa"
+        #formPesquisa="ngForm"
+        (ngSubmit)="formGroupPesquisa.valid && pesquisar()"
+        novalidate
+    >
+        <div class="linha">
+            <mat-form-field class="form-campo">
+                <input matInput formControlName="nome" placeholder="Nome..." />
+            </mat-form-field>
+            <mat-form-field fxFlex class="form-campo">
+                <mat-label>Situação</mat-label>
+                <mat-select id="situacaoCurso" formControlName="situacaoCurso" required>
+                    <mat-option *ngFor="let key of keysSituacoesEnum" [value]="key">
+                        {{ situacaoesCurso[key] }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+       
+        <div class="linha-botoes">
+            <button mat-raised-button color="primary" [disabled]="!formGroupPesquisa.valid">Pesquisar</button>
+            <button mat-raised-button color="default" (click)="limparFiltro()">
+                Limpar Filtro
+            </button>
+        </div>
+    </form>
+    <div class="table-container">
+        <table mat-table [dataSource]="dadosTabela$ | async" matSort>
+            <caption class="clipped">
+                Tabela
+            </caption>
+            <ng-container matColumnDef="sigla">
+                <th scope="col" mat-header-cell *matHeaderCellDef mat-sort-header>Sigla</th>
+                <td mat-cell *matCellDef="let item">
+                    {{ item.sigla }}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="nome">
+                <th scope="col" mat-header-cell *matHeaderCellDef mat-sort-header>Nome</th>
+                <td mat-cell *matCellDef="let item">
+                    {{ item.nome }}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="cargaHoraria">
+                <th scope="col" mat-header-cell *matHeaderCellDef mat-sort-header>Carga Horária</th>
+                <td mat-cell *matCellDef="let item">
+                    {{ item.cargaHoraria }}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="acoes" stickyEnd>
+                <th scope="col" mat-header-cell *matHeaderCellDef>Ações</th>
+                <td mat-cell *matCellDef="let item">
+                    <button mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                        <mat-menu #menu="matMenu">
+                            <button mat-menu-item (click)="editarItem(item)">
+                                <mat-icon>edit</mat-icon>
+                                <span>Editar</span>
+                            </button>
+                        </mat-menu>
+                    </mat-menu>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="colunasTabela"></tr>
+            <tr
+                mat-row
+                *matRowDef="let item; columns: colunasTabela"
+                [hidden]="carregando$ | async"
+                (click)="editarItem(item)"
+                class="example-detail-row"
+            ></tr>
+        </table>
+
+        <div class="div-mat-spinner-tabela" *ngIf="carregando$ | async">
+            <mat-spinner></mat-spinner>
+        </div>
+        <div class="div-mensagem-tabela" *ngIf="(dadosTabela$ | async)?.length == 0 && !(carregando$ | async)">
+            Nenhum registro carregado.
+        </div>
+    </div>
+</div>
+
+<mat-paginator [length]="totalElementos$ | async" [pageSize]="5" [pageSizeOptions]="[1, 5, 10, 30]"> </mat-paginator>

@@ -1,0 +1,236 @@
+stages:
+    - install_dependencies
+    - build
+    - test
+    - build_image
+    - deploy
+install_dependencies:
+    stage: install_dependencies
+    image: trion/ng-cli:14.2.2
+    cache:
+        key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
+        paths:
+            - node_modules/
+    script:
+        - npm ci
+build_prod:
+    stage: build
+    image: trion/ng-cli:14.2.2
+    dependencies:
+        - install_dependencies
+    cache:
+        key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
+        paths:
+            - node_modules/
+        policy: pull
+    script:
+        - export NODE_OPTIONS="--max-old-space-size=4096"
+        - ng build --prod
+    artifacts:
+        paths:
+            - dist/
+    only:
+        - master
+
+build_homolog:
+    stage: build
+    image: trion/ng-cli:14.2.2
+    dependencies:
+        - install_dependencies
+    cache:
+        key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
+        paths:
+            - node_modules/
+        policy: pull
+    script:
+        - export NODE_OPTIONS="--max-old-space-size=4096"
+        - ng build -c homolog
+    artifacts:
+        paths:
+            - dist/
+    only:
+        - staging
+build_dev:
+    stage: build
+    image: trion/ng-cli:14.2.2
+    dependencies:
+        - install_dependencies
+    cache:
+        key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
+        paths:
+            - node_modules/
+        policy: pull
+    script:
+        - export NODE_OPTIONS="--max-old-space-size=4096"
+        - ng build -c dev
+    artifacts:
+        paths:
+            - dist/
+    only:
+        - develop
+test:karma:
+    stage: test
+    image: trion/ng-cli-karma
+    cache:
+        key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
+        paths:
+            - node_modules/
+        policy: pull
+    allow_failure: false
+    script:
+        - ng test --progress false --watch false
+    only:
+        - disabled
+
+geracao_imagem_homolog:
+    stage: build_image
+    image: docker:stable
+    dependencies:
+        - build_homolog
+    services:
+        - docker:dind
+    before_script:
+        # ARBO_USER e ARBO_USER_PASSWORD credenciais de usuario exclusivo para push de imagens
+        - echo ${ARBO_USER_PASSWORD} | docker login registry.gitlab.com -u ${ARBO_USER} --password-stdin
+    script:
+        # Atualizando link para apontar para backend
+        - cat config-files/config-homolog.json > dist/arbo-ead-angular/assets/config.json
+        - docker build -t registry.gitlab.com/arbocontrolmeta8/docker/imagens/sv-front-app-homolog:latest .
+        - docker push registry.gitlab.com/arbocontrolmeta8/docker/imagens/sv-front-app-homolog:latest
+    after_script:
+        - docker logout registry.gitlab.com
+    only:
+        - staging
+deploy_via_ssh_homolog:
+    stage: deploy
+    dependencies:
+        - geracao_imagem_homolog
+    before_script:
+        - "which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )"
+        - eval $(ssh-agent -s)
+        # SSH_PRIVATE_KEY (adicionado pela UI de gitlab.com)
+        - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+        - mkdir -p ~/.ssh
+        - chmod 700 ~/.ssh
+        - ssh-keyscan sisvetor.com >> ~/.ssh/known_hosts
+        - chmod 644 ~/.ssh/known_hosts
+    script:
+        - ssh arbouser@sisvetor.com "cd homolog/sv-front-app-homolog-deploy && git pull && docker-compose down && docker-compose pull && docker-compose up -d"
+    only:
+        - staging
+
+geracao_imagem_prod:
+    stage: build_image
+    image: docker:stable
+    dependencies:
+        - build_prod
+    services:
+        - docker:dind
+    before_script:
+        # ARBO_USER e ARBO_USER_PASSWORD credenciais de usuario exclusivo para push de imagens
+        - echo ${ARBO_USER_PASSWORD} | docker login registry.gitlab.com -u ${ARBO_USER} --password-stdin
+    script:
+        # Atualizando link para apontar para backend
+        - cat config-files/config-prod.json > dist/arbo-ead-angular/assets/config.json
+        - docker build -t registry.gitlab.com/arbocontrolmeta8/docker/imagens/sv-front-app-prod:latest .
+        - docker push registry.gitlab.com/arbocontrolmeta8/docker/imagens/sv-front-app-prod:latest
+    after_script:
+        - docker logout registry.gitlab.com
+    only:
+        - master
+
+deploy_via_ssh_prod:
+    stage: deploy
+    dependencies:
+        - geracao_imagem_prod
+    before_script:
+        - "which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )"
+        - eval $(ssh-agent -s)
+        # SSH_PRIVATE_KEY (adicionado pela UI de gitlab.com)
+        - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+        - mkdir -p ~/.ssh
+        - chmod 700 ~/.ssh
+        - ssh-keyscan sisvetor.com >> ~/.ssh/known_hosts
+        - chmod 644 ~/.ssh/known_hosts
+    script:
+        - ssh arbouser@sisvetor.com "cd prod/sv-front-app-prod-deploy && git pull && docker-compose down && docker-compose pull && docker-compose up -d"
+    when: manual
+    only:
+        - master
+
+geracao_imagem_dev:
+    stage: build_image
+    image: docker:stable
+    dependencies:
+        - build_dev
+    services:
+        - docker:dind
+    before_script:
+        # ARBO_USER e ARBO_USER_PASSWORD credenciais de usuario exclusivo para push de imagens
+        - echo ${ARBO_USER_PASSWORD} | docker login registry.gitlab.com -u ${ARBO_USER} --password-stdin
+    script:
+        # Atualizando link para apontar para backend
+        - cat config-files/config-dev.json > dist/arbo-ead-angular/assets/config.json
+        - docker build -t registry.gitlab.com/arbocontrolmeta8/docker/imagens/sv-front-app-dev:latest .
+        - docker push registry.gitlab.com/arbocontrolmeta8/docker/imagens/sv-front-app-dev:latest
+    after_script:
+        - docker logout registry.gitlab.com
+    only:
+        - develop
+
+deploy_via_ssh_dev:
+    stage: deploy
+    dependencies:
+        - geracao_imagem_dev
+    before_script:
+        - "which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )"
+        - eval $(ssh-agent -s)
+        # SSH_PRIVATE_KEY (adicionado pela UI de gitlab.com)
+        - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+        - mkdir -p ~/.ssh
+        - chmod 700 ~/.ssh
+        - ssh-keyscan sisvetor.com >> ~/.ssh/known_hosts
+        - chmod 644 ~/.ssh/known_hosts
+    script:
+        - ssh arbouser@sisvetor.com "cd dev/sv-front-app-dev-deploy && git pull && docker-compose down && docker-compose pull && docker-compose up -d"
+    only:
+        - develop
+
+build_prod_publica:
+    stage: build
+    image: trion/ng-cli:14.2.2
+    dependencies:
+        - install_dependencies
+    cache:
+        key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
+        paths:
+            - node_modules/
+        policy: pull
+    script:
+        - export NODE_OPTIONS="--max-old-space-size=4096"
+        - ng build --prod
+    artifacts:
+        paths:
+            - dist/
+    only:
+        - public
+
+geracao_imagem_publica:
+    stage: build_image
+    image: docker:stable
+    dependencies:
+        - build_prod_publica
+    services:
+        - docker:dind
+    before_script:
+        # ARBO_USER e ARBO_USER_PASSWORD credenciais de usuario exclusivo para push de imagens
+        - echo ${GLEYTONLIMA_DOCKER_TOKEN} | docker login -u gleytonlima --password-stdin
+    script:
+        # Atualizando link para apontar para backend
+        - cat config-files/config-prod.json > dist/arbo-ead-angular/assets/config.json
+        - docker build -t gleytonlima/sisvetor-app:latest .
+        - docker push gleytonlima/sisvetor-app:latest
+    after_script:
+        - docker logout
+    only:
+        - public

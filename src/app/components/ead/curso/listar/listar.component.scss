@@ -1,0 +1,60 @@
+table {
+    width: 100%;
+}
+
+.loading-shade {
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+td.mat-column-acoes {
+    width: 20px;
+}
+
+.center {
+    height: 100%;
+    width: 100%;
+    white-space: nowrap;
+    text-align: center;
+    margin: 1em 0;
+}
+
+.center-vertical-horizontal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 400px;
+}
+
+.logo {
+    width: 60%;
+}
+
+mat-chip {
+    align-items: center;
+}
+
+mat-chip mat-icon {
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.concluido {
+    background-color: #516091;
+    margin: 5px 0px 5px 0px;
+}
+.nao-iniciado{
+    background-color: #FFEB99;
+    margin: 5px 0px 5px 0px;
+}
+.em-andamento{
+    background-color: #A9ECA2;
+    margin: 5px 0px 5px 0px;
+}
+
+.reprovado{
+    background-color: #9e4533;
+    margin: 5px 0px 5px 0px;
+}

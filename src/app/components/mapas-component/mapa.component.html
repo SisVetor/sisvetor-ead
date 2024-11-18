@@ -1,0 +1,17 @@
+<button
+    id="salvar"
+    class="botao-definir-coordenadas-mapa"
+    type="button"
+    mat-raised-button
+    color="primary"
+    (click)="definirCoordenadas()"
+>
+    Definir Coordenadas
+</button>
+<button mat-mini-fab class="botaoVoltarMapa" color="default" (click)="cancelar()">
+    <mat-icon>chevron_left</mat-icon>
+</button>
+
+<mat-icon *ngIf="movendoMapa" class="center-marker">location_on</mat-icon>
+
+<div id="ol-map" class="map-container"></div>

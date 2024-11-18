@@ -1,0 +1,14 @@
+table {
+    width: 100%;
+}
+
+.loading-shade {
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+td.mat-column-acoes {
+    width: 20px;
+}

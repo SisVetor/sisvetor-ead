@@ -1,0 +1,20 @@
+.main-sidenav-container {
+    height: 100%;
+}
+
+.mat-toolbar.mat-primary {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.div-offline-status {
+    padding: 5px;
+    margin: 2px;
+    background-color: rgb(246, 246, 246);
+    color: gray
+}
+
+.span-sigla-unidade {
+    margin-right: 5px;
+}

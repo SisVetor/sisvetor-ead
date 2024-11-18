@@ -1,0 +1,3 @@
+<span *ngIf="exibir" class="span-loading-indicator" [@popOverState]="status" (@popOverState.done)="fimAnimacao($event)">
+    <mat-spinner class="spinner-principal" diameter="20"></mat-spinner>
+</span>

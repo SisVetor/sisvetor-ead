@@ -1,0 +1,10 @@
+<div class="div-lista-cursos-container">
+    <div class="div-cursos" [@animationTriggerListaCursos]>
+        <app-curso-selecao-listar-component
+            #listaCursoComponente
+            (itemSelecionadoEmitter)="selecionarCurso($event)"
+        >
+        </app-curso-selecao-listar-component>
+    </div>
+</div>
+<app-loading-indicator-component [carregando]="carregandoCursos"> </app-loading-indicator-component>

@@ -1,0 +1,144 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
+@import "styles/googleapis-icon.css";
+@import "styles/googleapis-montserrat.css";
+@import "styles/ol.css";
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+}
+
+.nav-spacer {
+    flex: 1 1 auto;
+}
+
+.spinner-container {
+    text-align: center;
+    margin: 0 auto;
+}
+
+.spinner-container mat-spinner {
+    margin: 130px auto 0 auto;
+}
+
+.green-snackbar {
+    --mdc-snackbar-container-color: rgb(67, 156, 106);
+    --mat-snack-bar-button-color: #fff;
+}
+
+.red-snackbar {
+    --mdc-snackbar-container-color: rgb(250, 84, 84);
+    color: white;
+}
+
+.red-snackbar {
+    ---mdc-snack-bar-action-label-color: white;
+    --mat-snack-bar-button-color: #fff;
+}
+
+.fab {
+    right: 20px;
+    bottom: 20px;
+    position: fixed !important;
+    z-index: 1000;
+}
+
+.fabLeftBottom {
+    left: 20px;
+    bottom: 20px;
+    position: fixed !important;
+    z-index: 1000;
+}
+
+.botao-definir-coordenadas-mapa {
+    margin-left: 10%;
+    left: 10%;
+    width: 50%;
+    bottom: 5%;
+    position: absolute !important;
+    z-index: 1000;
+}
+
+.fabUp {
+    right: 20px;
+    top: 20px;
+    position: fixed !important;
+    z-index: 1000;
+}
+
+.linha-botoes button,
+.linha-botoes a {
+    margin-right: 8px;
+}
+
+.linha-botoes {
+    padding-top: 20px;
+}
+
+.form-campo {
+    width: 100%;
+}
+
+/*Formulario*/
+.form {
+    padding: 10px;
+    min-width: 150px;
+    max-width: 500px;
+    width: 100%;
+}
+
+.form-campo-secao {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    height: 60px;
+}
+
+.loading-shade {
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.span-link {
+    cursor: pointer;
+    color: #337ab7;
+}
+
+.span-link:hover {
+    text-decoration: underline;
+}
+
+//https://github.com/angular/components/issues/13899 - Botao com borda azul quando está com foco
+button:focus,
+button:active:focus,
+button.active:focus {
+    outline: none !important;
+    outline-style: none !important;
+}
+
+.clipped {
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+}
+
+.linha {
+    display: flex;
+    flex-direction: row;
+    //adiciona um gap
+    gap: 10px;
+}
+
+.coluna {
+    flex: 1;
+}

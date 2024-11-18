@@ -1,0 +1,75 @@
+<app-main-nav></app-main-nav>
+<mat-toolbar color="secondary" *ngIf="usuario$ | async">
+    <mat-toolbar-row>
+        <span>Seus Cursos</span>
+
+        <span class="nav-spacer"></span>
+
+        <button mat-icon-button (click)="atualizarListaCursos()">
+            <mat-icon aria-hidden="false">refresh</mat-icon>
+        </button>
+    </mat-toolbar-row>
+</mat-toolbar>
+<div *ngIf="!(dadosTabela$ | async)?.length && (usuario$ | async)" class="center">
+    <img alt="Nenhum cursp" src="./assets/sem-cursos.png" />
+    <div class="mat-caption">Sem cursos</div>
+    <button mat-icon-button (click)="atualizarListaCursos()">
+        <mat-icon aria-hidden="false">update</mat-icon>
+    </button>
+</div>
+<div *ngIf="!(usuario$ | async)" class="center-vertical-horizontal">
+    <img alt="Entrar" class="logo" src="./assets/logo_sisvetor.png" />
+</div>
+<mat-nav-list>
+    <mat-list-item
+        class
+        *ngFor="let cursoUsuario of dadosTabela$ | async; let last = last"
+        (click)="selecionarItem(cursoUsuario)"
+        [ngClass]="{'nao-iniciado': cursoUsuario.status === 'NAO_INICIADO', 'em-andamento': cursoUsuario.status === 'EM_ANDAMENTO', 'concluido': cursoUsuario.status === 'CONCLUIDO', 'reprovado': cursoUsuario.status === 'REPROVADO' }"
+    >
+    <span>
+
+            <mat-grid-list cols="3">
+                <mat-grid-tile
+                    colspan="2"
+                    rowspan="1">
+                    <p matListItemTitle>
+                        <span> {{ cursoUsuario.curso.sigla }} </span>
+                    </p>                    
+                </mat-grid-tile>
+                <mat-grid-tile
+                    colspan="1"
+                    rowspan="4">
+                    <button mat-raised-button>Me Inscrever</button>
+                </mat-grid-tile>                
+                <mat-grid-tile
+                    colspan="2"
+                    rowspan="1">
+                    <p matListItemLine>
+                        <span>
+                            <b>{{ cursoUsuario.curso.nome }} </b>
+                        </span>
+                    </p>                    
+                </mat-grid-tile>
+                <mat-grid-tile
+                    colspan="2"
+                    rowspan="1">
+                    <p matListItemLine>
+                        <mat-chip> <mat-icon aria-hidden="false" aria-label="carga horária" fontIcon="schedule"></mat-icon>
+                            {{ cursoUsuario.curso.cargaHoraria }} horas</mat-chip>
+                    </p>                    
+                </mat-grid-tile>
+                <mat-grid-tile
+                    colspan="2"
+                    rowspan="1">
+                    <p matListItemLine *ngIf="cursoUsuario.curso.dataInscricao">
+                        <mat-chip>
+                            <mat-icon aria-hidden="false" aria-label="data inscrição" fontIcon="login"></mat-icon>
+                            {{ formatarData(cursoUsuario.curso.dataInscricao) }}
+                        </mat-chip>
+                    </p>                 
+                </mat-grid-tile>
+              </mat-grid-list>
+    </span>
+    </mat-list-item>
+</mat-nav-list>

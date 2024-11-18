@@ -1,0 +1,26 @@
+table {
+    width: 100%;
+}
+
+.table-container {
+    min-height: 300px;
+    max-height: 300px;
+    overflow: auto !important;
+    background-color: white;
+}
+
+.div-mat-spinner-tabela {
+    background-color: white;
+    position: relative;
+    margin-left: 45%;
+    margin-top: 5%;
+}
+
+.div-mensagem-tabela {
+    background-color: white;
+    padding: 20px;
+}
+
+td.mat-column-acoes {
+    width: 20px;
+}

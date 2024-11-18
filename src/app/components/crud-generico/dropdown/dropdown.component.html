@@ -1,0 +1,40 @@
+<div [formGroup]="formGroup" fxFlex>
+    <mat-form-field class="form-campo" *ngIf="modelo">
+        <input
+            [id]="'autocomplete-' + modelo"
+            matInput
+            placeholder="{{ placeholder }}"
+            [matAutocomplete]="auto_complete_id"
+            formControlName="{{ nomePadraoFormControl }}"
+            (blur)="checarItemSelecionado()"
+            (focus)="emitirEventoFocus($event)"
+            required="{{ required }}"
+        />
+        <button type="button" matPrefix mat-icon-button>
+            <mat-icon style="color: gray;">search</mat-icon>
+        </button>
+        <mat-autocomplete
+            #auto_complete_id="matAutocomplete"
+            [displayWith]="recursos[modelo].formatarExibicaoItem"
+            (optionSelected)="aoSelecionarItem($event)"
+        >
+            <mat-option *ngIf="carregando$ | async">
+                <mat-spinner diameter="50"></mat-spinner>
+            </mat-option>
+            <ng-container *ngIf="!(carregando$ | async)">
+                <mat-option *ngFor="let item of itensFiltrados$ | async" [value]="item">
+                    <span>{{ recursos[modelo].formatarExibicaoItem(item) }}</span>
+                    <span
+                        *ngIf="item.descricao"
+                        class="icone-dropdown"
+                        color="custom-info"
+                        matTooltipPosition="above"
+                        [matTooltip]="item.descricao"
+                    >
+                        <mat-icon>info</mat-icon>
+                    </span>
+                </mat-option>
+            </ng-container>
+        </mat-autocomplete>
+    </mat-form-field>
+</div>
