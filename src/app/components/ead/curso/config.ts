@@ -58,6 +58,31 @@ export enum StatusUsuarioCurso {
     CONCLUIDO
 }
 
+export class UsuarioCursoSerializer implements Serializer {
+    fromJson(json: any): UsuarioCurso {
+        return {
+            id: json.id,
+            dataInscricao: json.dataInscricao,
+            curso: json.curso,
+            usuario: json.usuario,
+            dataUltimoAcesso: json.dataUltimoAcesso,
+            status: json.status,
+            numeroTentativas: json.numeroTentativas
+        };
+    }
+
+    toJson(usuarioCurso: UsuarioCurso): any {
+        return {
+            id: usuarioCurso.id,
+            dataInscricao: usuarioCurso.dataInscricao,
+            curso: usuarioCurso.curso,
+            usuario: usuarioCurso.usuario,
+            dataUltimoAcesso: usuarioCurso.dataUltimoAcesso,
+            status: usuarioCurso.status,
+            numeroTentativas: usuarioCurso.numeroTentativas
+        };
+    }
+}
 
 export class CursoSerializer implements Serializer {
     fromJson(json: any): Curso {

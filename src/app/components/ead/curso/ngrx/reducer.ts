@@ -47,6 +47,7 @@ export function usuarioCursoReducer(baseState, baseAction) {
             return entityAdapter.setAll(action.entityList, {
                 ...state,
                 totalElementos: action.totalElements,
+                elementos: action.entityList,
                 carregando: false,
                 listaCarregada: true
             });

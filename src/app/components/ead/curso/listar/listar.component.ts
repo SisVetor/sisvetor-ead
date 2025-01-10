@@ -1,9 +1,9 @@
 import { Component, EventEmitter, OnInit, Output } from "@angular/core";
-import { Store, select } from "@ngrx/store";
-import { Observable } from "rxjs";
+import { select, Store } from "@ngrx/store";
+import { map, Observable } from "rxjs";
 import { selectorUsuario } from "../../../autenticacao/ngrx/selectors";
 import Usuario from "../../../model/Usuario";
-import { UsuarioCurso } from "../config";
+import { StatusUsuarioCurso, UsuarioCurso } from "../config";
 import * as actions from "../ngrx/actions";
 import * as reducer from "../ngrx/reducer";
 import { selectCarregando, selectElementos, selectTotalElementos } from "../ngrx/selectors";
@@ -13,14 +13,17 @@ import { selectCarregando, selectElementos, selectTotalElementos } from "../ngrx
     styleUrls: ["./listar.component.scss"],
 })
 export class ListarCursoComponent implements OnInit {
-    dadosTabela$: Observable<UsuarioCurso[]>;
+    dadosTabelaEmAndamento$: Observable<UsuarioCurso[]>;
+    dadosTabelaEmNaoIniciado$: Observable<UsuarioCurso[]>;
     carregando$: Observable<boolean>;
     totalElementos$: Observable<any>;
     usuario$: Observable<Usuario>;
     colunasTabela: string[] = ["nome", "cargaHoraria", "dataInicio"];
     quantidadeCursosListar = 20;
 
-    @Output() itemSelecionadoEmitter = new EventEmitter<any>();
+    @Output() inscreverEmitter = new EventEmitter<any>();
+    @Output() certificadoEmitter = new EventEmitter<any>();
+    @Output() continuarEmitter = new EventEmitter<any>();
 
     constructor(private store: Store<reducer.UsuarioCursoEntityState>) {}
 
@@ -29,18 +32,32 @@ export class ListarCursoComponent implements OnInit {
     }
 
     carregarTabela() {
-        this.dadosTabela$ = this.store.select(selectElementos);
+        this.atualizarListaCursos();
+        this.dadosTabelaEmAndamento$ = this.store.select(selectElementos).pipe(
+            map(usuariosCursos => usuariosCursos.filter(usuarioCurso => parseInt(StatusUsuarioCurso[usuarioCurso.status].valueOf()) == StatusUsuarioCurso.EM_ANDAMENTO.valueOf()) )
+        );
+        this.dadosTabelaEmNaoIniciado$ = this.store.select(selectElementos).pipe(
+            map(usuariosCursos => usuariosCursos.filter(usuarioCurso => {
+                console.log(usuarioCurso.status.valueOf());
+                console.log(StatusUsuarioCurso.NAO_INICIADO.valueOf());
+                console.log(StatusUsuarioCurso[usuarioCurso.status]);
+                return parseInt(StatusUsuarioCurso[usuarioCurso.status].valueOf()) == StatusUsuarioCurso.NAO_INICIADO.valueOf()
+            }) )
+        );
         this.carregando$ = this.store.select(selectCarregando);
         this.totalElementos$ = this.store.select(selectTotalElementos);
         this.usuario$ = this.store.pipe(select(selectorUsuario));
-        this.listarLocalmente();
+        
     }
 
     atualizarListaCursos() {
+        console.log(navigator.onLine);
         if (navigator.onLine) {
             this.listarNuvem();
+        } else {
+            this.listarLocalmente();
         }
-        this.listarLocalmente();
+        
     }
 
 
@@ -83,10 +100,15 @@ export class ListarCursoComponent implements OnInit {
         
     }
 
-    selecionarItem(item: UsuarioCurso) {
-        this.itemSelecionadoEmitter.emit(item);
+    inscrever(item: UsuarioCurso) {
+        this.inscreverEmitter.emit(item);
     }
-
+    continuarCurso(item: UsuarioCurso) {
+        this.continuarEmitter.emit(item);
+    }
+    emitirCertificado(item: UsuarioCurso) {
+        this.certificadoEmitter.emit(item);
+    }
     formatarData(data: string) {
         return data ? data.split("-").reverse().join("/") : "";
     }

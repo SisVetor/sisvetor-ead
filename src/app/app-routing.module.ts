@@ -6,22 +6,27 @@ import { mapaRoutes } from "./pages/mapa/routes";
 export const routes: Routes = [
     {
         path: "lista-cursos",
-        loadChildren: () => import("./pages/lista-cursos/lista-cursos.module").then((m) => m.ColetaDadosModule),
+        loadChildren: () => import("./pages/curso/lista-cursos/lista-cursos.module").then((m) => m.ListaCursosModule),
         data: { animation: "ListaCursosPage" },
     },
     {
         path: "",
-        loadChildren: () => import("./pages/lista-cursos/lista-cursos.module").then((m) => m.ColetaDadosModule),
+        loadChildren: () => import("./pages/curso/lista-cursos/lista-cursos.module").then((m) => m.ListaCursosModule),
     },
     {
         path: "lista-cursos/:id",
-        loadChildren: () => import("./pages/lista-cursos/lista-cursos.module").then((m) => m.ColetaDadosModule),
+        loadChildren: () => import("./pages/curso/lista-cursos/lista-cursos.module").then((m) => m.ListaCursosModule),
         data: { animation: "ListaCursosPage" },
     },
     {
-        path: "lista-cursos/:id/:formularioId",
-        loadChildren: () => import("./pages/lista-cursos/lista-cursos.module").then((m) => m.ColetaDadosModule),
+        path: "lista-cursos/:id",
+        loadChildren: () => import("./pages/curso/lista-cursos/lista-cursos.module").then((m) => m.ListaCursosModule),
         data: { animation: "ListaCursosPage" },
+    },
+    {
+        path: "principal-curso/:id",
+        loadChildren: () => import("./pages/curso/principal/principal.module").then((m) => m.PrincipalCursoModule),
+        data: { animation: "PrincipalCursoPage" },
     },
     {
         path: "login",

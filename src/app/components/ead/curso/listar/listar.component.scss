@@ -40,21 +40,37 @@ mat-chip mat-icon {
     margin-right: 8px;
     vertical-align: middle;
 }
+.card-cursos {
+    margin: 0px 0px 10px 0px;
+}
+.card-cursos .mat-mdc-card-content{
+    padding: 10px 10px 10px 10px;
+}
+.card-cursos .mat-mdc-card-header{
+    padding: 10px 10px 10px 10px;
+}
+.concluido .mat-mdc-card-header, .concluido .mat-mdc-card-actions {
 
-.concluido {
-    background-color: #516091;
-    margin: 5px 0px 5px 0px;
+    background-color: #2b3760;
 }
-.nao-iniciado{
-    background-color: #FFEB99;
-    margin: 5px 0px 5px 0px;
-}
+
 .em-andamento{
+
     background-color: #A9ECA2;
-    margin: 5px 0px 5px 0px;
 }
 
-.reprovado{
-    background-color: #9e4533;
-    margin: 5px 0px 5px 0px;
+.em-andamento .mat-mdc-card-header {
+
+    background-color: #85d47c;
+}
+.nao-iniciado {
+
+    background-color: #faf7a9;
+}
+.nao-iniciado .mat-mdc-card-header {
+    background-color: #f8f27c;
+}
+
+.reprovado .mat-mdc-card-header {
+    background-color: #9e5344;
 }

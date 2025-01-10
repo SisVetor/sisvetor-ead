@@ -2,15 +2,17 @@ import { animate, state, style, transition, trigger } from "@angular/animations"
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Actions } from "@ngrx/effects";
+import { Actions, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
-import { Observable, Subject, Subscription } from "rxjs";
+import { Observable, Subject, Subscription, takeUntil } from "rxjs";
+import { UsuarioCurso } from './../../../components/ead/curso/config';
 
 import { DialogoConfirmacaoComponent } from "src/app/components/dialogo-confirmacao/dialogo-confirmacao.component";
-import { StatusUsuarioCurso, urlsPadrao, UsuarioCurso } from "src/app/components/ead/curso/config";
+import { StatusUsuarioCurso, urlsPadrao } from "src/app/components/ead/curso/config";
 import { ListarCursoComponent } from "src/app/components/ead/curso/listar/listar.component";
+import { UsuarioCursoActions } from "src/app/components/ead/curso/ngrx/action-types";
 import { selectCarregando, selectElementos } from "src/app/components/ead/curso/ngrx/selectors";
-import { State } from "../../components/reducers";
+import { State } from "../../../components/reducers";
 
 
 @Component({
@@ -75,6 +77,15 @@ export class ListaCursosPage implements OnInit, OnDestroy, AfterViewInit {
                     this.itemSelecionado = true;
                 }
             });
+        this.actions$
+            .pipe(ofType(UsuarioCursoActions.InscreverSucesso), takeUntil(this.destroyed$))
+            .subscribe(ev => {
+                if (ev) {
+                    this.router.navigateByUrl(
+                        `principal-curso/` + `${ev.usuarioCurso.id}`
+                    );
+                }
+            });
     }
 
 
@@ -94,7 +105,7 @@ export class ListaCursosPage implements OnInit, OnDestroy, AfterViewInit {
         this.destroyed$.complete();
     }
 
-    selecionarCurso(usuarioCurso: UsuarioCurso) {
+    inscrever(usuarioCurso: UsuarioCurso) {
 
         if(usuarioCurso.status.toString(0) == StatusUsuarioCurso[StatusUsuarioCurso.NAO_INICIADO]) {
             console.log("SELECIONADO2!");
@@ -111,14 +122,57 @@ export class ListaCursosPage implements OnInit, OnDestroy, AfterViewInit {
             });
 
 
-            dialogoConfirmacao.afterClosed().subscribe((usuarioCurso: UsuarioCurso) => {
-                if (usuarioCurso) {
-                    this.cursoSelecionado = usuarioCurso;
-                    this.voltarParaTopoPagina();
-                    this.abrirPaginaRealizaCurso(usuarioCurso);
+            dialogoConfirmacao.afterClosed().subscribe((result) => {
+                if (result) {
+                    if (usuarioCurso.id) {
+                        console.log(usuarioCurso);
+                        let usuarioCursoAltera = {...usuarioCurso, status: StatusUsuarioCurso.EM_ANDAMENTO};
+                        console.log(usuarioCursoAltera);
+                        this.store.dispatch(
+                            UsuarioCursoActions.Inscrever({
+                                usuarioCurso: usuarioCursoAltera
+                                })
+                        );
+                    }
+                    
                 }
             });
         }
+    }
+
+    
+    continuarCurso(usuarioCurso: UsuarioCurso) {
+        if(usuarioCurso.status.toString(0) == StatusUsuarioCurso[StatusUsuarioCurso.EM_ANDAMENTO]) {
+            const dialogoConfirmacao = this.matDialog.open(DialogoConfirmacaoComponent, {
+                width: "500px",
+                data: {
+                    titulo: "Atenção!",
+                    conteudo:
+                        `Você vai continuar o curso "${usuarioCurso.curso.nome}". Deseja continuar?`,
+                    corBotaoConfirmar: "primary",
+                    textoBotaoConfirmar: "Coninuar",
+                    textoBotaoCancelar: "Cancelar",
+                },
+            });
+
+
+            dialogoConfirmacao.afterClosed().subscribe((result) => {
+                if (result) {
+                    if (usuarioCurso.id) {
+                        this.store.dispatch(
+                            UsuarioCursoActions.ContinuarCurso({
+                                usuarioCurso: usuarioCurso
+                                })
+                        );
+                        return;
+                    }
+                    
+                }
+            });
+        }
+    }
+    emitirCertificado(item: UsuarioCurso) {
+        //this.certificadoEmitter.emit(item);
     }
 
     voltarParaTopoPagina() {

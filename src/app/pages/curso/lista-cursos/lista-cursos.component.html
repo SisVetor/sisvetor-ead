@@ -2,7 +2,9 @@
     <div class="div-cursos" [@animationTriggerListaCursos]>
         <app-curso-selecao-listar-component
             #listaCursoComponente
-            (itemSelecionadoEmitter)="selecionarCurso($event)"
+            (inscreverEmitter)="inscrever($event)"
+            (continuarEmitter)="continuarCurso($event)"
+            (certificadoEmitter)="emitirCertificado($event)"
         >
         </app-curso-selecao-listar-component>
     </div>

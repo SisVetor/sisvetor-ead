@@ -27,3 +27,28 @@ export const ListarNuvemSucesso = createAction(
 );
 
 export const ListarNuvemErro = createAction("[Curso] Listado Nuvem com Erro", props<{ erro: any }>());
+
+
+export const Inscrever = createAction(
+    "[Curso] Inscrever",
+    props<{ usuarioCurso: UsuarioCurso}>()
+);
+
+export const InscreverSucesso = createAction(
+    "[Curso] Inscrever com Sucesso",
+    props<{ usuarioCurso: UsuarioCurso }>()
+);
+
+export const InscreverErro = createAction("[Curso] Inscrever com Erro", props<{ usuarioCurso: UsuarioCurso, erro: any }>());
+
+export const ContinuarCurso = createAction(
+    "[Curso] Continuar Curso",
+    props<{ usuarioCurso: UsuarioCurso }>()
+);
+
+export const ContinuarCursoSucesso = createAction(
+    "[Curso] Continuar Curso com Sucesso",
+    props<{ usuarioCurso: UsuarioCurso  }>()
+);
+
+export const ContinuarCursoErro = createAction("[Curso] Continuar Curso com Erro", props<{ erro: any }>());

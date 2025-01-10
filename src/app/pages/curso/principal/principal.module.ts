@@ -13,20 +13,20 @@ import { RouterModule, Routes } from "@angular/router";
 
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatListModule } from "@angular/material/list";
-import { LoadIndicatorModule } from "../../components/_shared/loading-indicator/loading-indicator.module";
+import { LoadIndicatorModule } from "../../../components/_shared/loading-indicator/loading-indicator.module";
 
 import { UsuarioCursoModule } from "src/app/components/ead/curso/listar/listar.module";
-import { ListaCursosPage } from "./lista-cursos.component";
+import { PrincipalCursoPage } from "./principal.component";
 
 const routes: Routes = [
     {
         path: "",
-        component: ListaCursosPage,
-        data: { animation: "ListaCursosPage" },
+        component: PrincipalCursoPage,
+        data: { animation: "PrincipalCursoPage" },
     },
 ];
 @NgModule({
-    declarations: [ListaCursosPage],
+    declarations: [PrincipalCursoPage],
     imports: [
         CommonModule,
         MatSnackBarModule,
@@ -44,6 +44,6 @@ const routes: Routes = [
         LoadIndicatorModule,
         RouterModule.forChild(routes),
     ],
-    exports: [ListaCursosPage],
+    exports: [PrincipalCursoPage],
 })
-export class ColetaDadosModule {}
+export class PrincipalCursoModule {}

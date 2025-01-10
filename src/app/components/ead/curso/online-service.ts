@@ -5,14 +5,14 @@ import { ConfigService } from "src/app/ConfigService";
 import { Page } from "../../model/Page";
 import { ResourceService } from "../../services/api-generico-v2.service";
 import { QueryOptions } from "../../services/query-options";
-import { CursoSerializer, UsuarioCurso } from "./config";
+import { UsuarioCurso, UsuarioCursoSerializer } from "./config";
 
 @Injectable({
     providedIn: "root"
 })
 export class UsuarioCursoOnLineService extends ResourceService<UsuarioCurso> {
     constructor(httpClient: HttpClient, configService: ConfigService) {
-        super(httpClient, configService, "api/v1/usuario-cursos", new CursoSerializer());
+        super(httpClient, configService, "api/v1/usuario-cursos", new UsuarioCursoSerializer());
     }
     listarCursos(queryOptions: QueryOptions): Observable<Page<UsuarioCurso>> {
         const href = `${this.configService.config.defaultUrl}/api/v1/usuario-cursos/lista-cursos-usuario?${queryOptions.toQueryString()}`;

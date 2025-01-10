@@ -1,7 +1,7 @@
 <app-main-nav></app-main-nav>
-<mat-toolbar color="secondary" *ngIf="usuario$ | async">
+<mat-toolbar color="secondary" *ngIf="(dadosTabelaEmAndamento$ | async)?.length && usuario$ | async">
     <mat-toolbar-row>
-        <span>Seus Cursos</span>
+        <span>Cursos em Andamento</span>
 
         <span class="nav-spacer"></span>
 
@@ -10,7 +10,7 @@
         </button>
     </mat-toolbar-row>
 </mat-toolbar>
-<div *ngIf="!(dadosTabela$ | async)?.length && (usuario$ | async)" class="center">
+<div *ngIf="!(dadosTabelaEmAndamento$ | async)?.length && !(dadosTabelaEmNaoIniciado$ | async)?.length && (usuario$ | async)" class="center">
     <img alt="Nenhum cursp" src="./assets/sem-cursos.png" />
     <div class="mat-caption">Sem cursos</div>
     <button mat-icon-button (click)="atualizarListaCursos()">
@@ -20,56 +20,59 @@
 <div *ngIf="!(usuario$ | async)" class="center-vertical-horizontal">
     <img alt="Entrar" class="logo" src="./assets/logo_sisvetor.png" />
 </div>
-<mat-nav-list>
-    <mat-list-item
-        class
-        *ngFor="let cursoUsuario of dadosTabela$ | async; let last = last"
-        (click)="selecionarItem(cursoUsuario)"
-        [ngClass]="{'nao-iniciado': cursoUsuario.status === 'NAO_INICIADO', 'em-andamento': cursoUsuario.status === 'EM_ANDAMENTO', 'concluido': cursoUsuario.status === 'CONCLUIDO', 'reprovado': cursoUsuario.status === 'REPROVADO' }"
-    >
-    <span>
+<mat-card 
+    *ngFor="let cursoUsuario of dadosTabelaEmAndamento$ | async; let last = last"
+    class="card-cursos"
+    [ngClass]="{'nao-iniciado card-cursos': cursoUsuario.status === 'NAO_INICIADO', 'em-andamento card-cursos': cursoUsuario.status === 'EM_ANDAMENTO', 'concluido card-cursos': cursoUsuario.status === 'CONCLUIDO', 'reprovado card-cursos': cursoUsuario.status === 'REPROVADO' }">
+    <mat-card-header>
+        <mat-card-title>{{ cursoUsuario.curso.sigla }}</mat-card-title>
+        <mat-card-subtitle>{{ cursoUsuario.curso.nome }}</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content><p>{{ cursoUsuario.curso.descricao }}</p></mat-card-content>
+    
+    <mat-card-actions *ngIf="cursoUsuario.status === 'NAO_INICIADO'">
+        <button mat-raised-button (click)="inscrever(cursoUsuario)">Inscrever-me</button>
+    </mat-card-actions>
+    <mat-card-actions *ngIf="cursoUsuario.status === 'EM_ANDAMENTO'">
+        <button mat-raised-button (click)="continuarCurso(cursoUsuario)">Continuar</button>
+    </mat-card-actions>
+    <mat-card-actions *ngIf="cursoUsuario.status === 'CONCLUIDO'">
+        <button mat-raised-button (click)="emitirCertificado(cursoUsuario)">Emitir Certificado</button>
+    </mat-card-actions>
+</mat-card>
 
-            <mat-grid-list cols="3">
-                <mat-grid-tile
-                    colspan="2"
-                    rowspan="1">
-                    <p matListItemTitle>
-                        <span> {{ cursoUsuario.curso.sigla }} </span>
-                    </p>                    
-                </mat-grid-tile>
-                <mat-grid-tile
-                    colspan="1"
-                    rowspan="4">
-                    <button mat-raised-button>Me Inscrever</button>
-                </mat-grid-tile>                
-                <mat-grid-tile
-                    colspan="2"
-                    rowspan="1">
-                    <p matListItemLine>
-                        <span>
-                            <b>{{ cursoUsuario.curso.nome }} </b>
-                        </span>
-                    </p>                    
-                </mat-grid-tile>
-                <mat-grid-tile
-                    colspan="2"
-                    rowspan="1">
-                    <p matListItemLine>
-                        <mat-chip> <mat-icon aria-hidden="false" aria-label="carga horária" fontIcon="schedule"></mat-icon>
-                            {{ cursoUsuario.curso.cargaHoraria }} horas</mat-chip>
-                    </p>                    
-                </mat-grid-tile>
-                <mat-grid-tile
-                    colspan="2"
-                    rowspan="1">
-                    <p matListItemLine *ngIf="cursoUsuario.curso.dataInscricao">
-                        <mat-chip>
-                            <mat-icon aria-hidden="false" aria-label="data inscrição" fontIcon="login"></mat-icon>
-                            {{ formatarData(cursoUsuario.curso.dataInscricao) }}
-                        </mat-chip>
-                    </p>                 
-                </mat-grid-tile>
-              </mat-grid-list>
-    </span>
-    </mat-list-item>
-</mat-nav-list>
+
+<mat-toolbar color="secondary" *ngIf="(dadosTabelaEmNaoIniciado$ | async)?.length && usuario$ | async">
+    <mat-toolbar-row>
+        <span>Novos Cursos</span>
+
+        <span class="nav-spacer"></span>
+
+        <button mat-icon-button (click)="atualizarListaCursos()">
+            <mat-icon aria-hidden="false">refresh</mat-icon>
+        </button>
+    </mat-toolbar-row>
+</mat-toolbar>
+
+<mat-card 
+    *ngFor="let cursoUsuario of dadosTabelaEmNaoIniciado$ | async; let last = last"
+    class="card-cursos"
+    [ngClass]="{'nao-iniciado card-cursos': cursoUsuario.status === 'NAO_INICIADO', 'em-andamento card-cursos': cursoUsuario.status === 'EM_ANDAMENTO', 'concluido card-cursos': cursoUsuario.status === 'CONCLUIDO', 'reprovado card-cursos': cursoUsuario.status === 'REPROVADO' }">
+    <mat-card-header>
+        <mat-card-title>{{ cursoUsuario.curso.sigla }}</mat-card-title>
+        <mat-card-subtitle>{{ cursoUsuario.curso.nome }}</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content><p>{{ cursoUsuario.curso.descricao }}</p></mat-card-content>
+    
+    <mat-card-actions *ngIf="cursoUsuario.status === 'NAO_INICIADO'">
+        <button mat-raised-button (click)="inscrever(cursoUsuario)">Inscrever-me</button>
+    </mat-card-actions>
+    <mat-card-actions *ngIf="cursoUsuario.status === 'EM_ANDAMENTO'">
+        <button mat-raised-button (click)="continuarCurso(cursoUsuario)">Continuar</button>
+    </mat-card-actions>
+    <mat-card-actions *ngIf="cursoUsuario.status === 'CONCLUIDO'">
+        <button mat-raised-button (click)="emitirCertificado(cursoUsuario)">Emitir Certificado</button>
+    </mat-card-actions>
+</mat-card>

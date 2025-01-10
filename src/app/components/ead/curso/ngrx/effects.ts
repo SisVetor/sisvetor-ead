@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { select, State, Store } from "@ngrx/store";
-import { catchError, from, map, mergeMap, withLatestFrom } from "rxjs";
+import { catchError, from, map, mergeMap, switchMap, withLatestFrom } from "rxjs";
 import { SnackbarAbrir } from "src/app/components/_shared/notificacao/notificacao.actions";
 import { selectorUsuario } from "src/app/components/autenticacao/ngrx/selectors";
 import { Page } from "src/app/components/model/Page";
@@ -90,5 +90,40 @@ export class UsuarioCursoEffects {
                 })
             ),
         { dispatch: false }
+    );
+
+
+    inscrever$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(UsuarioCursoActions.Inscrever),
+            switchMap((payload) => {
+                return this.usuarioCursoOnLineService.update(payload.usuarioCurso).pipe(
+                    switchMap((usuarioCurso: UsuarioCurso) => {
+                       
+                        return [
+                            
+                            UsuarioCursoActions.InscreverSucesso({ usuarioCurso }),
+                            new SnackbarAbrir({
+                                message: "Inscrição Realizada com sucesso",
+                                config: { panelClass: "green-snackbar" },
+                            }),
+                        ];
+                    }),
+                    catchError((erro) => {
+                        const actionsList = [
+                            UsuarioCursoActions.InscreverErro({
+                                usuarioCurso: payload.usuarioCurso,
+                                erro,
+                            }),
+                            new SnackbarAbrir({
+                                message: "Ops... Erro ao realizar a inscrição: " + erro,
+                                config: { panelClass: "red-snackbar" },
+                            }),
+                        ];
+                        return from(actionsList);
+                    })
+                );
+            })
+        )
     );
 }

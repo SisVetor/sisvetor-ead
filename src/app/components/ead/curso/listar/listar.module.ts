@@ -18,8 +18,8 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 import { EffectsModule } from "@ngrx/effects";
 import { StoreModule } from "@ngrx/store";
 
+import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from "@angular/material/chips";
-import { MatGridListModule } from '@angular/material/grid-list';
 import { MainNavModule } from "../../../main-nav/main-nav.module";
 import { usuarioCursoStoreName } from "../config";
 import { UsuarioCursoEffects } from "../ngrx/effects";
@@ -48,7 +48,7 @@ import { ListarCursoComponent } from "./listar.component";
         MatAutocompleteModule,
         MatCheckboxModule,
         MatListModule,
-        MatGridListModule,
+        MatCardModule,
         MainNavModule,
         StoreModule.forFeature(usuarioCursoStoreName, usuarioCursoReducer),
         EffectsModule.forFeature([UsuarioCursoEffects])
